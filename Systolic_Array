@@ -1,0 +1,42 @@
+import numpy as np
+
+class SystolicArray:
+    def __init__(self, size):
+        self.size = size
+        self.PEs = np.zeros((size, size))  # Processing elements
+
+    def multiply(self, A, B):
+        """
+        Simulates matrix multiplication using a systolic array.
+        A and B must be square matrices of the same size as the array.
+        """
+        N = self.size
+        C = np.zeros((N, N))
+
+        # Initialize input buffers
+        A_buffer = np.copy(A)
+        B_buffer = np.copy(B)
+
+        # Simulate the systolic movement
+        for step in range(2 * N - 1):
+            for i in range(N):
+                for j in range(N):
+                    if 0 <= i - step < N and 0 <= j - step < N:
+                        C[i, j] += A_buffer[i - step, j] * B_buffer[i, j - step]
+
+        return C
+
+# Example usage
+N = 4  # Systolic array size
+A = np.random.randint(1, 10, (N, N))
+B = np.random.randint(1, 10, (N, N))
+
+systolic_array = SystolicArray(N)
+C = systolic_array.multiply(A, B)
+
+print("Matrix A:")
+print(A)
+print("\nMatrix B:")
+print(B)
+print("\nResult (C = A * B):")
+print(C)
