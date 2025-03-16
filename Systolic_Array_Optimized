@@ -1,0 +1,42 @@
+import numpy as np
+
+class SystolicArray:
+    def __init__(self, size):
+        self.size = size
+        self.PEs = np.zeros((size, size), dtype=np.float16)  # FP16 Processing elements
+
+    def multiply(self, A, B):
+        """
+        Simulates matrix multiplication using a systolic array with FP16 precision.
+        A and B must be square matrices of the same size as the array.
+        """
+        N = self.size
+        C = np.zeros((N, N), dtype=np.float16)  # FP16 output matrix
+
+        # Convert input matrices to FP16
+        A_buffer = A.astype(np.float16)
+        B_buffer = B.astype(np.float16)
+
+        # Simulate systolic movement
+        for step in range(2 * N - 1):
+            for i in range(N):
+                for j in range(N):
+                    if 0 <= i - step < N and 0 <= j - step < N:
+                        C[i, j] += A_buffer[i - step, j] * B_buffer[i, j - step]
+
+        return C
+
+# Example usage
+N = 4  # Systolic array size
+A = np.random.randint(1, 10, (N, N)).astype(np.float16)  # FP16 input
+B = np.random.randint(1, 10, (N, N)).astype(np.float16)  # FP16 input
+
+systolic_array = SystolicArray(N)
+C = systolic_array.multiply(A, B)
+
+print("Matrix A (FP16):")
+print(A)
+print("\nMatrix B (FP16):")
+print(B)
+print("\nResult (C = A * B) in FP16:")
+print(C)
